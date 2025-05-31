@@ -1,92 +1,86 @@
 const sequelize = require('../db')
-const {DataTypes} = require('sequelize')
+const { DataTypes } = require('sequelize')
 
 const User = sequelize.define('user', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    email: {type: DataTypes.STRING, unique: true,},
-    password: {type: DataTypes.STRING},
-    role: {type: DataTypes.STRING, defaultValue: "USER"},
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    email: { type: DataTypes.STRING, unique: true, },
+    password: { type: DataTypes.STRING },
+    role: { type: DataTypes.STRING, defaultValue: "USER" },
 })
 
-const Basket = sequelize.define('basket', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+const Favorite = sequelize.define('favorite', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 })
 
-const BasketDevice = sequelize.define('basket_device', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+const FavoriteCar = sequelize.define('favorite_car', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 })
 
-const Device = sequelize.define('device', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, unique: true, allowNull: false},
-    price: {type: DataTypes.INTEGER, allowNull: false},
-    rating: {type: DataTypes.INTEGER, defaultValue: 0},
-    img: {type: DataTypes.STRING, allowNull: false},
+const Car = sequelize.define('car', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING, unique: true, allowNull: false }, // Модель
+    price: { type: DataTypes.INTEGER, allowNull: false },
+    year: { type: DataTypes.INTEGER, allowNull: false },
+    mileage: { type: DataTypes.INTEGER, allowNull: false },
+    color: { type: DataTypes.STRING, allowNull: false },
+    engine: { type: DataTypes.STRING, allowNull: false },
+    transmission: { type: DataTypes.STRING, allowNull: false },
+    fuel: { type: DataTypes.STRING, allowNull: false },
+    img: { type: DataTypes.STRING, allowNull: false },
+    description: { type: DataTypes.STRING, allowNull: true },
 })
 
-const Type = sequelize.define('type', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, unique: true, allowNull: false},
+const CarType = sequelize.define('car_type', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING, unique: true, allowNull: false }, // Седан, внедорожник и т.д.
 })
 
-const Brand = sequelize.define('brand', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, unique: true, allowNull: false},
+const CarBrand = sequelize.define('car_brand', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING, unique: true, allowNull: false },
 })
 
-const Rating = sequelize.define('rating', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    rate: {type: DataTypes.INTEGER, allowNull: false},
-})
-
-const DeviceInfo = sequelize.define('device_info', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    title: {type: DataTypes.STRING, allowNull: false},
-    description: {type: DataTypes.STRING, allowNull: false},
+const CarFeatures = sequelize.define('car_features', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    title: { type: DataTypes.STRING, allowNull: false },
+    value: { type: DataTypes.STRING, allowNull: false },
 })
 
 const TypeBrand = sequelize.define('type_brand', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 })
 
 
-User.hasOne(Basket)
-Basket.belongsTo(User)
+User.hasOne(Favorite)
+Favorite.belongsTo(User)
 
-User.hasMany(Rating)
-Rating.belongsTo(User)
+Favorite.hasMany(FavoriteCar)
+FavoriteCar.belongsTo(Favorite)
 
-Basket.hasMany(BasketDevice)
-BasketDevice.belongsTo(Basket)
+CarType.hasMany(Car)
+Car.belongsTo(CarType)
 
-Type.hasMany(Device)
-Device.belongsTo(Type)
+CarBrand.hasMany(Car)
+Car.belongsTo(CarBrand)
 
-Brand.hasMany(Device)
-Device.belongsTo(Brand)
+Car.hasMany(FavoriteCar)
+FavoriteCar.belongsTo(Car)
 
-Device.hasMany(Rating)
-Rating.belongsTo(Device)
+Car.hasMany(CarFeatures, { as: 'features' });
+CarFeatures.belongsTo(Car)
 
-Device.hasMany(BasketDevice)
-BasketDevice.belongsTo(Device)
-
-Device.hasMany(DeviceInfo, {as: 'info'});
-DeviceInfo.belongsTo(Device)
-
-Type.belongsToMany(Brand, {through: TypeBrand })
-Brand.belongsToMany(Type, {through: TypeBrand })
+CarType.belongsToMany(CarBrand, { through: TypeBrand })
+CarBrand.belongsToMany(CarType, { through: TypeBrand })
 
 module.exports = {
     User,
-    Basket,
-    BasketDevice,
-    Device,
-    Type,
-    Brand,
-    Rating,
-    TypeBrand,
-    DeviceInfo
+    Favorite,
+    FavoriteCar,
+    Car,
+    CarType,
+    CarBrand,
+    CarFeatures,
+    TypeBrand
 }
 
 

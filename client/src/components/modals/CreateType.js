@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Modal from "react-bootstrap/Modal";
-import {Form, Button} from "react-bootstrap";
-import {createType} from "../../http/deviceAPI";
+import { Form, Button } from "react-bootstrap";
+import { createCarType } from "../../http/deviceAPI";
 
-const CreateType = ({show, onHide}) => {
+const CreateType = ({ show, onHide }) => {
     const [value, setValue] = useState('')
 
     const addType = () => {
-        createType({name: value}).then(data => {
+        createCarType({ name: value }).then(data => {
             setValue('')
             onHide()
         })
@@ -21,7 +21,7 @@ const CreateType = ({show, onHide}) => {
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    Добавить тип
+                    Добавить тип автомобиля
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -29,7 +29,7 @@ const CreateType = ({show, onHide}) => {
                     <Form.Control
                         value={value}
                         onChange={e => setValue(e.target.value)}
-                        placeholder={"Введите название типа"}
+                        placeholder={"Введите тип автомобиля (седан, внедорожник и т.д.)"}
                     />
                 </Form>
             </Modal.Body>

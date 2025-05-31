@@ -1,18 +1,17 @@
-const {Type} = require('../models/models')
+const { CarType } = require('../models/models')
 const ApiError = require('../error/ApiError');
 
-class TypeController {
+class CarTypeController {
     async create(req, res) {
-        const {name} = req.body
-        const type = await Type.create({name})
-        return res.json(type)
+        const { name } = req.body
+        const carType = await CarType.create({ name })
+        return res.json(carType)
     }
 
     async getAll(req, res) {
-        const types = await Type.findAll()
-        return res.json(types)
+        const carTypes = await CarType.findAll()
+        return res.json(carTypes)
     }
-
 }
 
-module.exports = new TypeController()
+module.exports = new CarTypeController()

@@ -1,15 +1,15 @@
-import {makeAutoObservable} from "mobx";
+import { makeAutoObservable } from "mobx";
 
-export default class DeviceStore {
+export default class CarStore {
     constructor() {
         this._types = []
         this._brands = []
-        this._devices = []
+        this._cars = []
         this._selectedType = {}
         this._selectedBrand = {}
         this._page = 1
         this._totalCount = 0
-        this._limit = 3
+        this._limit = 8
         makeAutoObservable(this)
     }
 
@@ -19,8 +19,8 @@ export default class DeviceStore {
     setBrands(brands) {
         this._brands = brands
     }
-    setDevices(devices) {
-        this._devices = devices
+    setCars(cars) {
+        this._cars = cars
     }
 
     setSelectedType(type) {
@@ -44,8 +44,8 @@ export default class DeviceStore {
     get brands() {
         return this._brands
     }
-    get devices() {
-        return this._devices
+    get cars() {
+        return this._cars
     }
     get selectedType() {
         return this._selectedType
@@ -61,5 +61,12 @@ export default class DeviceStore {
     }
     get limit() {
         return this._limit
+    }
+
+    // Сброс фильтров
+    resetFilters() {
+        this._selectedType = {}
+        this._selectedBrand = {}
+        this._page = 1
     }
 }

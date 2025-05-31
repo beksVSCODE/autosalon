@@ -1,18 +1,17 @@
-const {Brand} = require('../models/models')
+const { CarBrand } = require('../models/models')
 const ApiError = require('../error/ApiError');
 
-class BrandController {
+class CarBrandController {
     async create(req, res) {
-        const {name} = req.body
-        const brand = await Brand.create({name})
-        return res.json(brand)
+        const { name } = req.body
+        const carBrand = await CarBrand.create({ name })
+        return res.json(carBrand)
     }
 
     async getAll(req, res) {
-        const brands = await Brand.findAll()
-        return res.json(brands)
+        const carBrands = await CarBrand.findAll()
+        return res.json(carBrands)
     }
-
 }
 
-module.exports = new BrandController()
+module.exports = new CarBrandController()

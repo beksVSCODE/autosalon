@@ -1,48 +1,53 @@
-import React, {useContext, useEffect} from 'react';
-import {Container} from "react-bootstrap";
+import React, { useContext, useEffect } from 'react';
+import { Container } from "react-bootstrap";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import TypeBar from "../components/TypeBar";
-import BrandBar from "../components/BrandBar";
-import DeviceList from "../components/DeviceList";
-import {observer} from "mobx-react-lite";
-import {Context} from "../index";
-import {fetchBrands, fetchDevices, fetchTypes} from "../http/deviceAPI";
+import CarTypeBar from "../components/TypeBar";
+import CarBrandBar from "../components/BrandBar";
+import CarList from "../components/DeviceList";
+import { observer } from "mobx-react-lite";
+import { Context } from "../index";
+import { fetchCarBrands, fetchCars, fetchCarTypes } from "../http/deviceAPI";
 import Pages from "../components/Pages";
 
-const Shop = observer(() => {
-    const {device} = useContext(Context)
+const CarShop = observer(() => {
+    const { device } = useContext(Context)
 
     useEffect(() => {
-        fetchTypes().then(data => device.setTypes(data))
-        fetchBrands().then(data => device.setBrands(data))
-        fetchDevices(null, null, 1, 2).then(data => {
+        // Загружаем типы и бренды автомобилей при монтировании компонента
+        fetchCarTypes().then(data => device.setTypes(data))
+        fetchCarBrands().then(data => device.setBrands(data))
+        fetchCars(null, null, 1, 8).then(data => {
             device.setDevices(data.rows)
             device.setTotalCount(data.count)
         })
-    }, [])
+    }, [device])
 
     useEffect(() => {
-        fetchDevices(device.selectedType.id, device.selectedBrand.id, device.page, 2).then(data => {
+        // Обновляем список автомобилей при изменении фильтров или страницы
+        const typeId = device.selectedType?.id || null
+        const brandId = device.selectedBrand?.id || null
+        fetchCars(typeId, brandId, device.page, 8).then(data => {
             device.setDevices(data.rows)
             device.setTotalCount(data.count)
         })
-    }, [device.page, device.selectedType, device.selectedBrand,])
+    }, [device.page, device.selectedType, device.selectedBrand, device])
 
     return (
         <Container>
+            <h2 className="mt-3 mb-4">Каталог автомобилей</h2>
             <Row className="mt-2">
                 <Col md={3}>
-                    <TypeBar/>
+                    <CarTypeBar />
                 </Col>
                 <Col md={9}>
-                    <BrandBar/>
-                    <DeviceList/>
-                    <Pages/>
+                    <CarBrandBar />
+                    <CarList />
+                    <Pages />
                 </Col>
             </Row>
         </Container>
     );
 });
 
-export default Shop;
+export default CarShop;

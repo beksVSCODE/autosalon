@@ -1,16 +1,16 @@
 const uuid = require('uuid')
 const path = require('path');
-const {Device, DeviceInfo} = require('../models/models')
+const { Car, CarType, CarBrand, DeviceInfo } = require('../models/models')
 const ApiError = require('../error/ApiError');
 
-class DeviceController {
+class CarController {
     async create(req, res, next) {
         try {
-            let {name, price, brandId, typeId, info} = req.body
-            const {img} = req.files
+            let { name, price, year, mileage, color, engine, transmission, fuel, carBrandId, carTypeId, description, info } = req.body
+            const { img } = req.files
             let fileName = uuid.v4() + ".jpg"
             img.mv(path.resolve(__dirname, '..', 'static', fileName))
-            const device = await Device.create({name, price, brandId, typeId, img: fileName});
+            const car = await Car.create({ name, price, year, mileage, color, engine, transmission, fuel, carBrandId, carTypeId, description, img: fileName });
 
             if (info) {
                 info = JSON.parse(info)
@@ -18,49 +18,48 @@ class DeviceController {
                     DeviceInfo.create({
                         title: i.title,
                         description: i.description,
-                        deviceId: device.id
+                        carId: car.id
                     })
                 )
             }
 
-            return res.json(device)
+            return res.json(car)
         } catch (e) {
             next(ApiError.badRequest(e.message))
         }
-
     }
 
     async getAll(req, res) {
-        let {brandId, typeId, limit, page} = req.query
+        let { carBrandId, carTypeId, limit, page } = req.query
         page = page || 1
         limit = limit || 9
         let offset = page * limit - limit
-        let devices;
-        if (!brandId && !typeId) {
-            devices = await Device.findAndCountAll({limit, offset})
+        let cars;
+        if (!carBrandId && !carTypeId) {
+            cars = await Car.findAndCountAll({ limit, offset })
         }
-        if (brandId && !typeId) {
-            devices = await Device.findAndCountAll({where:{brandId}, limit, offset})
+        if (carBrandId && !carTypeId) {
+            cars = await Car.findAndCountAll({ where: { carBrandId }, limit, offset })
         }
-        if (!brandId && typeId) {
-            devices = await Device.findAndCountAll({where:{typeId}, limit, offset})
+        if (!carBrandId && carTypeId) {
+            cars = await Car.findAndCountAll({ where: { carTypeId }, limit, offset })
         }
-        if (brandId && typeId) {
-            devices = await Device.findAndCountAll({where:{typeId, brandId}, limit, offset})
+        if (carBrandId && carTypeId) {
+            cars = await Car.findAndCountAll({ where: { carTypeId, carBrandId }, limit, offset })
         }
-        return res.json(devices)
+        return res.json(cars)
     }
 
     async getOne(req, res) {
-        const {id} = req.params
-        const device = await Device.findOne(
+        const { id } = req.params
+        const car = await Car.findOne(
             {
-                where: {id},
-                include: [{model: DeviceInfo, as: 'info'}]
+                where: { id },
+                include: [{ model: DeviceInfo, as: 'info' }]
             },
         )
-        return res.json(device)
+        return res.json(car)
     }
 }
 
-module.exports = new DeviceController()
+module.exports = new CarController()

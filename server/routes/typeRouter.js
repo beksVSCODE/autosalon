@@ -1,9 +1,11 @@
-const Router = require('express')
-const router = new Router()
-const typeController = require('../controllers/typeController')
-const checkRole = require('../middleware/checkRoleMiddleware')
+const Router = require('express');
+const router = new Router();
+const carTypeController = require('../controllers/typeController');
+const checkRole = require('../middleware/checkRoleMiddleware');
 
-router.post('/', checkRole('ADMIN'), typeController.create)
-router.get('/', typeController.getAll)
+// Добавить тип автомобиля (только для ADMIN)
+router.post('/', checkRole('ADMIN'), carTypeController.create);
+// Получить все типы автомобилей
+router.get('/', carTypeController.getAll);
 
-module.exports = router
+module.exports = router;

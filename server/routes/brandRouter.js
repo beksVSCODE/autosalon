@@ -1,8 +1,11 @@
-const Router = require('express')
-const router = new Router()
-const brandController = require('../controllers/brandController')
+const Router = require('express');
+const router = new Router();
+const carBrandController = require('../controllers/brandController');
+const checkRole = require('../middleware/checkRoleMiddleware');
 
-router.post('/', brandController.create)
-router.get('/', brandController.getAll)
+// Добавить бренд автомобиля (только для ADMIN)
+router.post('/', checkRole('ADMIN'), carBrandController.create);
+// Получить все бренды автомобилей
+router.get('/', carBrandController.getAll);
 
-module.exports = router
+module.exports = router;

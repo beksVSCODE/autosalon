@@ -1,16 +1,16 @@
-import React, {useContext, useState} from 'react';
-import {Container, Form} from "react-bootstrap";
+import React, { useContext, useState } from 'react';
+import { Container, Form } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
-import {NavLink, useLocation, useHistory} from "react-router-dom";
-import {LOGIN_ROUTE, REGISTRATION_ROUTE, SHOP_ROUTE} from "../utils/consts";
-import {login, registration} from "../http/userAPI";
-import {observer} from "mobx-react-lite";
-import {Context} from "../index";
+import { NavLink, useLocation, useHistory } from "react-router-dom";
+import { LOGIN_ROUTE, REGISTRATION_ROUTE, SHOP_ROUTE } from "../utils/consts";
+import { login, registration } from "../http/userAPI";
+import { observer } from "mobx-react-lite";
+import { Context } from "../index";
 
 const Auth = observer(() => {
-    const {user} = useContext(Context)
+    const { user } = useContext(Context)
     const location = useLocation()
     const history = useHistory()
     const isLogin = location.pathname === LOGIN_ROUTE
@@ -25,11 +25,17 @@ const Auth = observer(() => {
             } else {
                 data = await registration(email, password);
             }
-            user.setUser(user)
+            user.setUser(data)
             user.setIsAuth(true)
             history.push(SHOP_ROUTE)
         } catch (e) {
-            alert(e.response.data.message)
+            let errorMessage = 'Произошла ошибка';
+            if (e.response && e.response.data && e.response.data.message) {
+                errorMessage = e.response.data.message;
+            } else if (e.message) {
+                errorMessage = e.message;
+            }
+            alert(errorMessage);
         }
 
     }
@@ -37,9 +43,9 @@ const Auth = observer(() => {
     return (
         <Container
             className="d-flex justify-content-center align-items-center"
-            style={{height: window.innerHeight - 54}}
+            style={{ height: window.innerHeight - 54 }}
         >
-            <Card style={{width: 600}} className="p-5">
+            <Card style={{ width: 600 }} className="p-5">
                 <h2 className="m-auto">{isLogin ? 'Авторизация' : "Регистрация"}</h2>
                 <Form className="d-flex flex-column">
                     <Form.Control
