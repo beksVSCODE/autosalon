@@ -18,7 +18,7 @@ const CarShop = observer(() => {
         fetchCarTypes().then(data => device.setTypes(data))
         fetchCarBrands().then(data => device.setBrands(data))
         fetchCars(null, null, 1, 8).then(data => {
-            device.setDevices(data.rows)
+            device.setCars(data.rows)
             device.setTotalCount(data.count)
         })
     }, [device])
@@ -28,7 +28,7 @@ const CarShop = observer(() => {
         const typeId = device.selectedType?.id || null
         const brandId = device.selectedBrand?.id || null
         fetchCars(typeId, brandId, device.page, 8).then(data => {
-            device.setDevices(data.rows)
+            device.setCars(data.rows)
             device.setTotalCount(data.count)
         })
     }, [device.page, device.selectedType, device.selectedBrand, device])

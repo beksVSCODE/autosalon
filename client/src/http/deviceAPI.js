@@ -35,6 +35,6 @@ export const fetchCars = async (carTypeId, carBrandId, page, limit = 8) => {
 }
 
 export const fetchOneCar = async (id) => {
-    const { data } = await $host.get('api/cars/' + id)
+    const { data } = await $host.get(`api/cars/${id}`)
     return data
 }

@@ -1,12 +1,23 @@
 const uuid = require('uuid')
 const path = require('path');
-const { Car, CarType, CarBrand, DeviceInfo } = require('../models/models')
+const { Car, CarType, CarBrand, CarFeatures } = require('../models/models')
 const ApiError = require('../error/ApiError');
 
 class CarController {
     async create(req, res, next) {
         try {
             let { name, price, year, mileage, color, engine, transmission, fuel, carBrandId, carTypeId, description, info } = req.body
+
+            // Проверяем обязательные поля
+            if (!name || !price || !year || !mileage || !color || !engine || !transmission || !fuel || !carBrandId || !carTypeId) {
+                return next(ApiError.badRequest('Заполните все обязательные поля'))
+            }
+
+            // Проверяем наличие изображения
+            if (!req.files || !req.files.img) {
+                return next(ApiError.badRequest('Добавьте изображение автомобиля'))
+            }
+
             const { img } = req.files
             let fileName = uuid.v4() + ".jpg"
             img.mv(path.resolve(__dirname, '..', 'static', fileName))
@@ -15,9 +26,9 @@ class CarController {
             if (info) {
                 info = JSON.parse(info)
                 info.forEach(i =>
-                    DeviceInfo.create({
+                    CarFeatures.create({
                         title: i.title,
-                        description: i.description,
+                        value: i.description,
                         carId: car.id
                     })
                 )

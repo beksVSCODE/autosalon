@@ -7,6 +7,7 @@ import { observer } from "mobx-react-lite";
 
 const CreateDevice = observer(({ show, onHide }) => {
     const { device } = useContext(Context)
+    const [loading, setLoading] = useState(false)
     const [name, setName] = useState('')
     const [price, setPrice] = useState(0)
     const [year, setYear] = useState('')
@@ -38,22 +39,47 @@ const CreateDevice = observer(({ show, onHide }) => {
         setFile(e.target.files[0])
     }
 
-    const addDevice = () => {
-        const formData = new FormData()
-        formData.append('name', name)
-        formData.append('price', `${price}`)
-        formData.append('year', year)
-        formData.append('mileage', `${mileage}`)
-        formData.append('color', color)
-        formData.append('engine', engine)
-        formData.append('transmission', transmission)
-        formData.append('fuel', fuel)
-        formData.append('description', description)
-        formData.append('img', file)
-        formData.append('brandId', device.selectedBrand.id)
-        formData.append('typeId', device.selectedType.id)
-        formData.append('info', JSON.stringify(info))
-        createCar(formData).then(data => onHide())
+    const addDevice = async () => {
+        try {
+            setLoading(true)
+            // Проверяем обязательные поля
+            if (!device.selectedType.id || !device.selectedBrand.id) {
+                alert('Выберите тип кузова и марку автомобиля')
+                return
+            }
+            if (!name || !price || !year || !mileage || !color || !engine || !transmission || !fuel) {
+                alert('Заполните все обязательные поля')
+                return
+            }
+            if (!file) {
+                alert('Добавьте изображение автомобиля')
+                return
+            }
+
+            const formData = new FormData()
+            formData.append('name', name)
+            formData.append('price', `${price}`)
+            formData.append('year', year)
+            formData.append('mileage', `${mileage}`)
+            formData.append('color', color)
+            formData.append('engine', engine)
+            formData.append('transmission', transmission)
+            formData.append('fuel', fuel)
+            formData.append('description', description)
+            formData.append('img', file)
+            formData.append('carBrandId', device.selectedBrand.id)
+            formData.append('carTypeId', device.selectedType.id)
+            formData.append('info', JSON.stringify(info))
+
+            await createCar(formData)
+            alert('Автомобиль успешно добавлен!')
+            onHide()
+            window.location.reload() // Обновляем страницу для отображения нового автомобиля
+        } catch (e) {
+            alert(e.response?.data?.message || 'Произошла ошибка при добавлении автомобиля')
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -196,7 +222,13 @@ const CreateDevice = observer(({ show, onHide }) => {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="outline-danger" onClick={onHide}>Закрыть</Button>
-                <Button variant="outline-success" onClick={addDevice}>Добавить</Button>
+                <Button
+                    variant="outline-success"
+                    onClick={addDevice}
+                    disabled={loading}
+                >
+                    {loading ? 'Добавление...' : 'Добавить'}
+                </Button>
             </Modal.Footer>
         </Modal>
     );

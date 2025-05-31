@@ -4,10 +4,10 @@ const carController = require('../controllers/deviceController');
 const checkRole = require('../middleware/checkRoleMiddleware');
 
 // Добавить автомобиль (только для ADMIN)
-router.post('/cars', checkRole('ADMIN'), carController.create);
+router.post('/', checkRole('ADMIN'), carController.create);
 // Получить все автомобили
-router.get('/cars', carController.getAll);
+router.get('/', carController.getAll);
 // Получить один автомобиль по id
-router.get('/cars/:id', carController.getOne);
+router.get('/:id', carController.getOne);
 
 module.exports = router;
