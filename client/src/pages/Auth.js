@@ -16,26 +16,47 @@ const Auth = observer(() => {
     const isLogin = location.pathname === LOGIN_ROUTE
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
+
+    const validateEmail = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return re.test(String(email).toLowerCase())
+    }
 
     const click = async () => {
         try {
-            let data;
-            if (isLogin) {
-                data = await login(email, password);
-            } else {
-                data = await registration(email, password);
+            setError('')
+            setLoading(true)
+
+            // Валидация полей
+            if (!email || !password) {
+                setError('Пожалуйста, заполните все поля')
+                return
             }
+
+            if (!validateEmail(email)) {
+                setError('Пожалуйста, введите корректный email')
+                return
+            }
+
+            if (!isLogin && password.length < 4) {
+                setError('Пароль должен быть не менее 4 символов')
+                return
+            }
+
+            const data = isLogin
+                ? await login(email, password)
+                : await registration(email, password)
+
             user.setUser(data)
             user.setIsAuth(true)
             history.push(SHOP_ROUTE)
+
         } catch (e) {
-            let errorMessage = 'Произошла ошибка';
-            if (e.response && e.response.data && e.response.data.message) {
-                errorMessage = e.response.data.message;
-            } else if (e.message) {
-                errorMessage = e.message;
-            }
-            alert(errorMessage);
+            setError(e.message)
+        } finally {
+            setLoading(false)
         }
 
     }
@@ -48,19 +69,29 @@ const Auth = observer(() => {
             <Card style={{ width: 600 }} className="p-5">
                 <h2 className="m-auto">{isLogin ? 'Авторизация' : "Регистрация"}</h2>
                 <Form className="d-flex flex-column">
-                    <Form.Control
-                        className="mt-3"
-                        placeholder="Введите ваш email..."
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                    />
-                    <Form.Control
-                        className="mt-3"
-                        placeholder="Введите ваш пароль..."
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        type="password"
-                    />
+                    <Form.Group className="mt-3">
+                        <Form.Control
+                            placeholder="Введите ваш email..."
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            isInvalid={error && email === ''}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            Введите email
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group className="mt-3">
+                        <Form.Control
+                            placeholder="Введите ваш пароль..."
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            type="password"
+                            isInvalid={error && password === ''}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            Введите пароль
+                        </Form.Control.Feedback>
+                    </Form.Group>
                     <Row className="d-flex justify-content-between mt-3 pl-3 pr-3">
                         {isLogin ?
                             <div>
@@ -71,14 +102,22 @@ const Auth = observer(() => {
                                 Есть аккаунт? <NavLink to={LOGIN_ROUTE}>Войдите!</NavLink>
                             </div>
                         }
+                        {error && (
+                            <div className="text-danger mb-3">
+                                {error}
+                            </div>
+                        )}
                         <Button
                             variant={"outline-success"}
                             onClick={click}
+                            disabled={loading}
                         >
-                            {isLogin ? 'Войти' : 'Регистрация'}
+                            {loading
+                                ? (isLogin ? 'Вход...' : 'Регистрация...')
+                                : (isLogin ? 'Войти' : 'Зарегистрироваться')
+                            }
                         </Button>
                     </Row>
-
                 </Form>
             </Card>
         </Container>

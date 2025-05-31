@@ -12,11 +12,22 @@ const App = observer(() => {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        check().then(data => {
-            user.setUser(data)
-            user.setIsAuth(true)
-        }).finally(() => setLoading(false))
-    }, [])
+        const checkAuth = async () => {
+            try {
+                const data = await check()
+                user.setUser(data)
+                user.setIsAuth(true)
+            } catch (error) {
+                user.setUser({})
+                user.setIsAuth(false)
+                console.log('Ошибка авторизации:', error.message)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        checkAuth()
+    }, [user])
 
     if (loading) {
         return <Spinner animation={"grow"} />
