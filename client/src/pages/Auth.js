@@ -29,7 +29,6 @@ const Auth = observer(() => {
             setError('')
             setLoading(true)
 
-            // Валидация полей
             if (!email || !password) {
                 setError('Пожалуйста, заполните все поля')
                 return
@@ -58,66 +57,96 @@ const Auth = observer(() => {
         } finally {
             setLoading(false)
         }
-
     }
 
     return (
         <Container
             className="d-flex justify-content-center align-items-center"
-            style={{ height: window.innerHeight - 54 }}
+            style={{ height: window.innerHeight - 54, background: '#f0f2f5' }}
         >
-            <Card style={{ width: 600 }} className="p-5">
-                <h2 className="m-auto">{isLogin ? 'Авторизация' : "Регистрация"}</h2>
+            <Card style={{
+                width: 500,
+                padding: '40px',
+                borderRadius: '16px',
+                background: '#ffffff',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+                border: 'none'
+            }}>
+                <h2 className="text-center mb-4" style={{
+                    fontWeight: '600',
+                    color: '#0b1e33',
+                    fontFamily: 'Poppins, sans-serif'
+                }}>
+                    {isLogin ? 'Вход в аккаунт' : 'Создание аккаунта'}
+                </h2>
                 <Form className="d-flex flex-column">
-                    <Form.Group className="mt-3">
+                    <Form.Group className="mb-3">
                         <Form.Control
-                            placeholder="Введите ваш email..."
+                            placeholder="Введите email"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             isInvalid={error && email === ''}
+                            style={{
+                                borderRadius: '10px',
+                                border: '1px solid #ced4da',
+                                padding: '12px',
+                                fontSize: '15px'
+                            }}
                         />
                         <Form.Control.Feedback type="invalid">
                             Введите email
                         </Form.Control.Feedback>
                     </Form.Group>
-                    <Form.Group className="mt-3">
+                    <Form.Group className="mb-3">
                         <Form.Control
-                            placeholder="Введите ваш пароль..."
+                            placeholder="Введите пароль"
                             value={password}
                             onChange={e => setPassword(e.target.value)}
                             type="password"
                             isInvalid={error && password === ''}
+                            style={{
+                                borderRadius: '10px',
+                                border: '1px solid #ced4da',
+                                padding: '12px',
+                                fontSize: '15px'
+                            }}
                         />
                         <Form.Control.Feedback type="invalid">
                             Введите пароль
                         </Form.Control.Feedback>
                     </Form.Group>
-                    <Row className="d-flex justify-content-between mt-3 pl-3 pr-3">
-                        {isLogin ?
-                            <div>
-                                Нет аккаунта? <NavLink to={REGISTRATION_ROUTE}>Зарегистрируйся!</NavLink>
-                            </div>
-                            :
-                            <div>
-                                Есть аккаунт? <NavLink to={LOGIN_ROUTE}>Войдите!</NavLink>
-                            </div>
+
+                    {error && (
+                        <div className="text-danger mb-3 text-center" style={{ fontSize: '14px' }}>
+                            {error}
+                        </div>
+                    )}
+
+                    <Button
+                        onClick={click}
+                        disabled={loading}
+                        style={{
+                            background: '#0b5ed7',
+                            border: 'none',
+                            borderRadius: '50px',
+                            padding: '10px 0',
+                            fontWeight: 600,
+                            fontSize: '16px',
+                            transition: '0.3s ease'
+                        }}
+                    >
+                        {loading
+                            ? (isLogin ? 'Вход...' : 'Регистрация...')
+                            : (isLogin ? 'Войти' : 'Зарегистрироваться')
                         }
-                        {error && (
-                            <div className="text-danger mb-3">
-                                {error}
-                            </div>
-                        )}
-                        <Button
-                            variant={"outline-success"}
-                            onClick={click}
-                            disabled={loading}
-                        >
-                            {loading
-                                ? (isLogin ? 'Вход...' : 'Регистрация...')
-                                : (isLogin ? 'Войти' : 'Зарегистрироваться')
-                            }
-                        </Button>
-                    </Row>
+                    </Button>
+
+                    <div className="mt-3 text-center" style={{ fontSize: '14px' }}>
+                        {isLogin
+                            ? <>Нет аккаунта? <NavLink to={REGISTRATION_ROUTE}>Зарегистрируйся!</NavLink></>
+                            : <>Есть аккаунт? <NavLink to={LOGIN_ROUTE}>Войдите!</NavLink></>
+                        }
+                    </div>
                 </Form>
             </Card>
         </Container>

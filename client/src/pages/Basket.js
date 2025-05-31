@@ -19,21 +19,42 @@ const Favorites = () => {
     };
 
     return (
-        <div>
-            <h2>Избранные автомобили</h2>
+        <div className="bg-light text-dark py-5 px-4" style={{ minHeight: '100vh' }}>
+            <div className="text-center mb-5">
+                <h2 className="fw-bold">⭐ Избранные автомобили</h2>
+                <p className="text-muted">Ваш персональный список избранного</p>
+                <hr className="w-25 mx-auto" />
+            </div>
             {cars.length === 0 ? (
-                <div>Список избранного пуст</div>
+                <div className="text-center text-muted fs-5">Список избранного пуст</div>
             ) : (
-                <Row>
+                <Row className="g-4">
                     {cars.map(car => (
-                        <Col md={4} key={car.id} className="mb-3">
-                            <Card>
+                        <Col md={4} key={car.id}>
+                            <Card className="h-100 shadow-sm border-0 rounded-4">
+                                <div className="p-2">
+                                    <Image
+                                        src={process.env.REACT_APP_API_URL + car.img}
+                                        fluid
+                                        rounded
+                                        className="w-100"
+                                        style={{ height: 180, objectFit: 'cover' }}
+                                    />
+                                </div>
                                 <Card.Body>
-                                    <Image width={100} src={process.env.REACT_APP_API_URL + car.img} rounded />
-                                    <Card.Title>{car.name} ({car.year})</Card.Title>
-                                    <Card.Text>Цена: {car.price} руб.</Card.Text>
-                                    <Button variant="danger" size="sm" onClick={() => handleRemove(car.id)}>
-                                        Удалить
+                                    <Card.Title className="fw-semibold fs-5 mb-2">
+                                        {car.name} <span className="text-muted fs-6">({car.year})</span>
+                                    </Card.Title>
+                                    <Card.Text className="mb-2">
+                                        💰 <strong>{car.price.toLocaleString()} ₽</strong>
+                                    </Card.Text>
+                                    <Button
+                                        variant="outline-danger"
+                                        size="sm"
+                                        className="w-100"
+                                        onClick={() => handleRemove(car.id)}
+                                    >
+                                        Удалить из избранного
                                     </Button>
                                 </Card.Body>
                             </Card>
