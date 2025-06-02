@@ -57,7 +57,8 @@ const Booking = sequelize.define('booking', {
     email: { type: DataTypes.STRING, allowNull: false },
     type: { type: DataTypes.ENUM('test_drive', 'purchase'), allowNull: false },
     date: { type: DataTypes.DATE, allowNull: false },
-    comment: { type: DataTypes.TEXT, allowNull: true }
+    comment: { type: DataTypes.TEXT, allowNull: true },
+    status: { type: DataTypes.ENUM('pending', 'confirmed', 'cancelled'), allowNull: false, defaultValue: 'pending' }
 }, { timestamps: true });
 
 User.hasOne(Favorite)

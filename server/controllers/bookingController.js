@@ -31,7 +31,7 @@ class BookingController {
             if (!car) return next(ApiError.badRequest('Автомобиль не найден'));
 
             const booking = await Booking.create({
-                carId, userId, full_name, phone, email, type, date, comment
+                carId, userId, full_name, phone, email, type, date, comment, status: 'pending'
             });
             return res.json(booking);
         } catch (e) {
@@ -82,6 +82,24 @@ class BookingController {
             return res.json(bookings);
         } catch (e) {
             next(ApiError.internal('Ошибка при получении бронирований: ' + e.message));
+        }
+    }
+
+    // Обновить статус бронирования (только для админа)
+    async updateStatus(req, res, next) {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+            if (!['pending', 'confirmed', 'cancelled'].includes(status)) {
+                return next(ApiError.badRequest('Некорректный статус'));
+            }
+            const booking = await Booking.findByPk(id);
+            if (!booking) return next(ApiError.badRequest('Бронирование не найдено'));
+            booking.status = status;
+            await booking.save();
+            return res.json(booking);
+        } catch (e) {
+            next(ApiError.internal('Ошибка обновления статуса: ' + e.message));
         }
     }
 }

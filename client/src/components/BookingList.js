@@ -100,6 +100,8 @@ const BookingList = observer(() => {
                             <td>{booking.user?.email || 'Н/Д'}</td>
                             <td>{booking.type === 'test_drive' ? 'Тест-драйв' : 'Покупка'}</td>
                             <td>{formatDate(booking.date)}</td>
+                            <td>{getStatusBadge(booking.status)}</td>
+                            <td>{booking.comment || '-'}</td>
                             <td>
                                 <Dropdown>
                                     <Dropdown.Toggle variant="light" size="sm">
@@ -118,7 +120,6 @@ const BookingList = observer(() => {
                                     </Dropdown.Menu>
                                 </Dropdown>
                             </td>
-                            <td>{booking.comment || '-'}</td>
                             <td>
                                 <Button
                                     variant="outline-danger"
