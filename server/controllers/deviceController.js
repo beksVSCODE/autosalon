@@ -137,6 +137,18 @@ class CarController {
             next(ApiError.internal('Ошибка при получении информации об автомобиле: ' + e.message))
         }
     }
+
+    async delete(req, res, next) {
+        try {
+            const { id } = req.params;
+            const car = await Car.findByPk(id);
+            if (!car) return res.status(404).json({ message: 'Автомобиль не найден' });
+            await car.destroy();
+            return res.json({ message: 'Автомобиль удалён' });
+        } catch (e) {
+            next(ApiError.internal('Ошибка удаления автомобиля: ' + e.message));
+        }
+    }
 }
 
 module.exports = new CarController()

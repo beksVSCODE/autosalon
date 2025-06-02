@@ -9,5 +9,7 @@ router.post('/', checkRole('ADMIN'), carController.create);
 router.get('/', carController.getAll);
 // Получить один автомобиль по id
 router.get('/:id', carController.getOne);
+// Удалить автомобиль (только для ADMIN)
+router.delete('/:id', checkRole('ADMIN'), carController.delete);
 
 module.exports = router;
