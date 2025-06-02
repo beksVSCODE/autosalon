@@ -1,4 +1,4 @@
-import { $authHost, $host } from './index';
+import { $authHost } from './index';
 
 export const createBooking = async (bookingData) => {
     try {
@@ -17,17 +17,17 @@ export const createBooking = async (bookingData) => {
 };
 
 export const deleteBooking = async (id) => {
-    const { data } = await $host.delete(`api/booking/${id}`);
+    const { data } = await $authHost.delete(`api/booking/${id}`);
     return data;
 };
 
 export const fetchAllBookings = async () => {
-    const { data } = await $host.get('api/booking');
+    const { data } = await $authHost.get('api/booking');
     return data;
 };
 
 export const updateBookingStatus = async (id, status) => {
-    const { data } = await $host.patch(`api/booking/${id}`, { status });
+    const { data } = await $authHost.patch(`api/booking/${id}`, { status });
     return data;
 };
 

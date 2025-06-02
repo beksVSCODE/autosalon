@@ -79,6 +79,7 @@ const BookingList = observer(() => {
                         <th>Автомобиль</th>
                         <th>Клиент</th>
                         <th>Контакты</th>
+                        <th>Email пользователя</th>
                         <th>Тип</th>
                         <th>Дата</th>
                         <th>Статус</th>
@@ -96,9 +97,8 @@ const BookingList = observer(() => {
                                 <div>{booking.phone}</div>
                                 <div className="text-muted">{booking.email}</div>
                             </td>
-                            <td>
-                                {booking.type === 'test_drive' ? 'Тест-драйв' : 'Покупка'}
-                            </td>
+                            <td>{booking.user?.email || 'Н/Д'}</td>
+                            <td>{booking.type === 'test_drive' ? 'Тест-драйв' : 'Покупка'}</td>
                             <td>{formatDate(booking.date)}</td>
                             <td>
                                 <Dropdown>
@@ -106,19 +106,13 @@ const BookingList = observer(() => {
                                         {getStatusBadge(booking.status)}
                                     </Dropdown.Toggle>
                                     <Dropdown.Menu>
-                                        <Dropdown.Item
-                                            onClick={() => handleStatusUpdate(booking.id, 'pending')}
-                                        >
+                                        <Dropdown.Item onClick={() => handleStatusUpdate(booking.id, 'pending')}>
                                             {getStatusBadge('pending')}
                                         </Dropdown.Item>
-                                        <Dropdown.Item
-                                            onClick={() => handleStatusUpdate(booking.id, 'confirmed')}
-                                        >
+                                        <Dropdown.Item onClick={() => handleStatusUpdate(booking.id, 'confirmed')}>
                                             {getStatusBadge('confirmed')}
                                         </Dropdown.Item>
-                                        <Dropdown.Item
-                                            onClick={() => handleStatusUpdate(booking.id, 'cancelled')}
-                                        >
+                                        <Dropdown.Item onClick={() => handleStatusUpdate(booking.id, 'cancelled')}>
                                             {getStatusBadge('cancelled')}
                                         </Dropdown.Item>
                                     </Dropdown.Menu>

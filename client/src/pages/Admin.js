@@ -1,14 +1,42 @@
-import React, { useState } from 'react';
-import { Button, Container, Row, Col, Card } from 'react-bootstrap';
+import React, { useState, useContext, useEffect } from 'react';
+import { Button, Container, Row, Col, Card, Alert } from 'react-bootstrap';
 import CreateBrand from "../components/modals/CreateBrand";
 import CreateDevice from "../components/modals/CreateDevice";
 import CreateType from "../components/modals/CreateType";
 import BookingList from '../components/BookingList';
+import { Context } from '../index';
+import { useHistory } from 'react-router-dom';
+import { SHOP_ROUTE } from '../utils/consts';
 
 const Admin = () => {
     const [brandVisible, setBrandVisible] = useState(false);
     const [typeVisible, setTypeVisible] = useState(false);
     const [deviceVisible, setDeviceVisible] = useState(false);
+    const [error, setError] = useState('');
+    const { user } = useContext(Context);
+    const history = useHistory();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setError('Отсутствует токен авторизации');
+            setTimeout(() => history.push(SHOP_ROUTE), 2000);
+            return;
+        }
+        if (!user.isAuth || user.user.role !== 'ADMIN') {
+            setError('Доступ запрещен: только для администратора');
+            setTimeout(() => history.push(SHOP_ROUTE), 2000);
+            return;
+        }
+    }, [user, history]);
+
+    if (error) {
+        return (
+            <Container className="py-5">
+                <Alert variant="danger" className="text-center">{error}</Alert>
+            </Container>
+        );
+    }
 
     return (
         <Container className="py-5">
