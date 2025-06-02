@@ -8,12 +8,10 @@ class CarController {
         try {
             let { name, price, year, mileage, color, engine, transmission, fuel, carBrandId, carTypeId, description, info } = req.body
 
-            // Проверяем обязательные поля
             if (!name || !price || !year || !mileage || !color || !engine || !transmission || !fuel || !carBrandId || !carTypeId) {
                 return next(ApiError.badRequest('Пожалуйста, заполните все обязательные поля'))
             }
 
-            // Проверяем корректность значений
             if (isNaN(price) || price <= 0) {
                 return next(ApiError.badRequest('Некорректная цена'))
             }
@@ -24,7 +22,6 @@ class CarController {
                 return next(ApiError.badRequest('Некорректный пробег'))
             }
 
-            // Проверяем существование типа и бренда
             const type = await CarType.findByPk(carTypeId)
             if (!type) {
                 return next(ApiError.badRequest('Указанный тип автомобиля не найден'))
@@ -35,13 +32,11 @@ class CarController {
                 return next(ApiError.badRequest('Указанный бренд не найден'))
             }
 
-            // Проверяем наличие изображения
             if (!req.files || !req.files.img) {
                 return next(ApiError.badRequest('Добавьте изображение автомобиля'))
             }
 
             const { img } = req.files
-            // Проверяем тип файла
             if (!img.mimetype.startsWith('image/')) {
                 return next(ApiError.badRequest('Файл должен быть изображением'))
             }
@@ -81,7 +76,6 @@ class CarController {
                 }
             }
 
-            // Получаем полные данные автомобиля вместе с характеристиками
             const carWithFeatures = await Car.findOne({
                 where: { id: car.id },
                 include: [{ model: CarFeatures, as: 'features' }]

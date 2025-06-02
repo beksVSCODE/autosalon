@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Image, Row } from "react-bootstrap";
 import { useParams } from 'react-router-dom'
 import { fetchOneCar } from "../http/deviceAPI";
+import CreateBooking from '../components/modals/CreateBooking';
 
 const CarPage = () => {
     const [car, setCar] = useState({ info: [] })
+    const [bookingVisible, setBookingVisible] = useState(false);
     const { id } = useParams()
     useEffect(() => {
         fetchOneCar(id).then(data => setCar(data))
     }, [id])
+
+    console.log('CreateBooking props:', { id, carName: car.name, bookingVisible });
 
     return (
         <Container className="mt-3">
@@ -26,6 +30,10 @@ const CarPage = () => {
                     <div>Цвет: {car.color}</div>
                     <div className="mt-3">{car.description}</div>
                     <Button variant={"outline-success"} className="mt-3">Добавить в избранное</Button>
+                    <Button variant="outline-primary" className="mt-3 me-2" onClick={() => setBookingVisible(true)}>
+                        Забронировать
+                    </Button>
+                    <CreateBooking show={bookingVisible} onHide={() => setBookingVisible(false)} carId={id} carName={car.name} />
                 </Col>
             </Row>
             {car.info && car.info.length > 0 && (

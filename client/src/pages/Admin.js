@@ -3,6 +3,7 @@ import { Button, Container, Row, Col, Card } from 'react-bootstrap';
 import CreateBrand from "../components/modals/CreateBrand";
 import CreateDevice from "../components/modals/CreateDevice";
 import CreateType from "../components/modals/CreateType";
+import BookingList from '../components/BookingList';
 
 const Admin = () => {
     const [brandVisible, setBrandVisible] = useState(false);
@@ -11,9 +12,9 @@ const Admin = () => {
 
     return (
         <Container className="py-5">
-            <Card className="p-4 shadow-sm border-0">
+            <Card className="p-4 shadow-sm border-0 mb-4">
                 <h2 className="text-center mb-4">Панель администратора</h2>
-                <Row className="g-3">
+                <Row className="g-3 mb-4">
                     <Col xs={12} md={4}>
                         <Button
                             variant="primary"
@@ -42,6 +43,7 @@ const Admin = () => {
                         </Button>
                     </Col>
                 </Row>
+                <BookingList />
             </Card>
 
             {/* Модальные окна */}

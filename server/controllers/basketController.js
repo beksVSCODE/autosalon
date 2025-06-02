@@ -2,7 +2,6 @@ const { Favorite, FavoriteCar, Car } = require('../models/models');
 const ApiError = require('../error/ApiError');
 
 class FavoriteController {
-    // Добавить автомобиль в избранное
     async addCar(req, res, next) {
         try {
             const userId = req.user.id;
@@ -11,7 +10,6 @@ class FavoriteController {
             if (!favorite) {
                 favorite = await Favorite.create({ userId });
             }
-            // Проверяем, есть ли уже такой автомобиль в избранном
             let favoriteCar = await FavoriteCar.findOne({ where: { favoriteId: favorite.id, carId } });
             if (favoriteCar) {
                 return res.status(400).json({ message: 'Автомобиль уже в избранном' });
@@ -23,7 +21,6 @@ class FavoriteController {
         }
     }
 
-    // Получить избранные автомобили
     async getFavorites(req, res, next) {
         try {
             const userId = req.user.id;
@@ -35,7 +32,6 @@ class FavoriteController {
                 where: { favoriteId: favorite.id },
                 include: [{ model: Car }]
             });
-            // Формируем список автомобилей
             const cars = favoriteCars.map(fc => fc.car);
             return res.json({ cars });
         } catch (e) {
@@ -43,7 +39,6 @@ class FavoriteController {
         }
     }
 
-    // Удалить автомобиль из избранного
     async removeCar(req, res, next) {
         try {
             const userId = req.user.id;

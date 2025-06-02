@@ -1,29 +1,30 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { createBooking } from '../../http/bookingAPI';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
-import { observer } from 'mobx-react-lite';
-import { ru } from 'date-fns/locale';
-import { format } from 'date-fns';
 
-const CreateBooking = observer(({ show, onHide, carId, carName }) => {
+const CreateBooking = ({ show, onHide, carId, carName }) => {
+    console.log('CreateBooking props inside:', { carId, carName, show });
+    // Хуки только на верхнем уровне!
     const [fullName, setFullName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [type, setType] = useState('test_drive');
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState('');
     const [comment, setComment] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // Проверка props
+    if (!carId || !carName) {
+        return <div style={{ color: 'red', padding: 20 }}>Ошибка: не передан автомобиль для бронирования</div>;
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setSuccess('');
         setLoading(true);
-
         try {
             const formData = {
                 carId,
@@ -31,20 +32,18 @@ const CreateBooking = observer(({ show, onHide, carId, carName }) => {
                 phone,
                 email,
                 type,
-                date: format(date, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSxxx'),
+                date: date ? new Date(date).toISOString() : null,
                 comment
             };
-
             await createBooking(formData);
             setSuccess('Бронирование успешно создано!');
             setTimeout(() => {
                 onHide();
-                // Сброс формы
                 setFullName('');
                 setPhone('');
                 setEmail('');
                 setType('test_drive');
-                setDate(new Date());
+                setDate('');
                 setComment('');
                 setSuccess('');
             }, 2000);
@@ -56,17 +55,6 @@ const CreateBooking = observer(({ show, onHide, carId, carName }) => {
         }
     };
 
-    // Фильтрация дат (минимум завтра, максимум через 30 дней)
-    const filterDate = (date) => {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
-        const maxDate = new Date();
-        maxDate.setDate(maxDate.getDate() + 30);
-
-        return date >= tomorrow && date <= maxDate;
-    };
-
     return (
         <Modal show={show} onHide={onHide} centered>
             <Modal.Header closeButton>
@@ -75,7 +63,6 @@ const CreateBooking = observer(({ show, onHide, carId, carName }) => {
             <Modal.Body>
                 {error && <Alert variant="danger">{error}</Alert>}
                 {success && <Alert variant="success">{success}</Alert>}
-
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
                         <Form.Label>ФИО</Form.Label>
@@ -87,7 +74,6 @@ const CreateBooking = observer(({ show, onHide, carId, carName }) => {
                             required
                         />
                     </Form.Group>
-
                     <Form.Group className="mb-3">
                         <Form.Label>Телефон</Form.Label>
                         <Form.Control
@@ -98,7 +84,6 @@ const CreateBooking = observer(({ show, onHide, carId, carName }) => {
                             required
                         />
                     </Form.Group>
-
                     <Form.Group className="mb-3">
                         <Form.Label>Email</Form.Label>
                         <Form.Control
@@ -109,7 +94,6 @@ const CreateBooking = observer(({ show, onHide, carId, carName }) => {
                             required
                         />
                     </Form.Group>
-
                     <Form.Group className="mb-3">
                         <Form.Label>Тип заявки</Form.Label>
                         <Form.Select
@@ -120,26 +104,15 @@ const CreateBooking = observer(({ show, onHide, carId, carName }) => {
                             <option value="purchase">Покупка</option>
                         </Form.Select>
                     </Form.Group>
-
                     <Form.Group className="mb-3">
-                        <Form.Label>Дата</Form.Label>
-                        <div>
-                            <DatePicker
-                                selected={date}
-                                onChange={date => setDate(date)}
-                                showTimeSelect
-                                timeFormat="HH:mm"
-                                timeIntervals={60}
-                                timeCaption="Время"
-                                dateFormat="d MMMM yyyy, HH:mm"
-                                filterDate={filterDate}
-                                locale={ru}
-                                className="form-control"
-                                minDate={new Date()}
-                            />
-                        </div>
+                        <Form.Label>Дата и время</Form.Label>
+                        <Form.Control
+                            type="datetime-local"
+                            value={date}
+                            onChange={e => setDate(e.target.value)}
+                            required
+                        />
                     </Form.Group>
-
                     <Form.Group className="mb-3">
                         <Form.Label>Комментарий (необязательно)</Form.Label>
                         <Form.Control
@@ -150,7 +123,6 @@ const CreateBooking = observer(({ show, onHide, carId, carName }) => {
                             placeholder="Дополнительная информация..."
                         />
                     </Form.Group>
-
                     <div className="d-flex justify-content-end">
                         <Button variant="secondary" onClick={onHide} className="me-2">
                             Отмена
@@ -167,6 +139,6 @@ const CreateBooking = observer(({ show, onHide, carId, carName }) => {
             </Modal.Body>
         </Modal>
     );
-});
+};
 
 export default CreateBooking;

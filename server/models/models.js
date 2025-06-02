@@ -50,6 +50,15 @@ const TypeBrand = sequelize.define('type_brand', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 })
 
+const Booking = sequelize.define('booking', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    full_name: { type: DataTypes.STRING, allowNull: false },
+    phone: { type: DataTypes.STRING, allowNull: false },
+    email: { type: DataTypes.STRING, allowNull: false },
+    type: { type: DataTypes.ENUM('test_drive', 'purchase'), allowNull: false },
+    date: { type: DataTypes.DATE, allowNull: false },
+    comment: { type: DataTypes.TEXT, allowNull: true }
+}, { timestamps: true });
 
 User.hasOne(Favorite)
 Favorite.belongsTo(User)
@@ -72,6 +81,11 @@ CarFeatures.belongsTo(Car)
 CarType.belongsToMany(CarBrand, { through: TypeBrand })
 CarBrand.belongsToMany(CarType, { through: TypeBrand })
 
+User.hasMany(Booking);
+Booking.belongsTo(User);
+Car.hasMany(Booking);
+Booking.belongsTo(Car);
+
 module.exports = {
     User,
     Favorite,
@@ -80,7 +94,8 @@ module.exports = {
     CarType,
     CarBrand,
     CarFeatures,
-    TypeBrand
+    TypeBrand,
+    Booking
 }
 
 
