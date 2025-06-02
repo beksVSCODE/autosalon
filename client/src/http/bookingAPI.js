@@ -30,3 +30,13 @@ export const updateBookingStatus = async (id, status) => {
     const { data } = await $host.patch(`api/booking/${id}`, { status });
     return data;
 };
+
+export const fetchUserBookings = async () => {
+    try {
+        const { data } = await $authHost.get('api/booking/user');
+        return data;
+    } catch (error) {
+        console.error('Ошибка при получении бронирований:', error);
+        throw error;
+    }
+};

@@ -10,5 +10,7 @@ router.post('/', authMiddleware, bookingController.create);
 router.get('/', checkRole('ADMIN'), bookingController.getAll);
 // Удалить бронирование (только для админа)
 router.delete('/:id', checkRole('ADMIN'), bookingController.delete);
+// Получить бронирования пользователя (для авторизованных пользователей)
+router.get('/user', authMiddleware, bookingController.getUserBookings);
 
 module.exports = router;

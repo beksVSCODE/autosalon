@@ -67,6 +67,23 @@ class BookingController {
             next(ApiError.internal('Ошибка удаления: ' + e.message));
         }
     }
+
+    // Получить бронирования пользователя
+    async getUserBookings(req, res, next) {
+        try {
+            const userId = req.user.id;
+            const bookings = await Booking.findAll({
+                where: { userId },
+                include: [
+                    { model: Car, attributes: ['id', 'name', 'price'] }
+                ],
+                order: [['date', 'DESC']]
+            });
+            return res.json(bookings);
+        } catch (e) {
+            next(ApiError.internal('Ошибка при получении бронирований: ' + e.message));
+        }
+    }
 }
 
 module.exports = new BookingController();

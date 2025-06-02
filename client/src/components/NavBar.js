@@ -3,7 +3,7 @@ import { Context } from "../index";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import { NavLink } from "react-router-dom";
-import { ADMIN_ROUTE, BASKET_ROUTE, LOGIN_ROUTE, SHOP_ROUTE } from "../utils/consts";
+import { ADMIN_ROUTE, BASKET_ROUTE, LOGIN_ROUTE, SHOP_ROUTE, PROFILE_ROUTE } from "../utils/consts";
 import { Button } from "react-bootstrap";
 import { observer } from "mobx-react-lite";
 import Container from "react-bootstrap/Container";
@@ -97,15 +97,18 @@ const NavBar = observer(() => {
                 <Navbar.Collapse id="navbar" className="justify-content-end">
                     {user.isAuth ? (
                         <Nav className="align-items-center gap-3">
+                            <HoverButton onClick={() => history.push(PROFILE_ROUTE)}>
+                                Профиль
+                            </HoverButton>
                             {user.user.role === 'ADMIN' && user.user.email === 'admin@gmail.com' && (
                                 <HoverButton onClick={() => history.push(ADMIN_ROUTE)}>
                                     Админ
                                 </HoverButton>
                             )}
-                            <HoverButton onClick={logOut}>Выйти</HoverButton>
-                            <HoverButton light onClick={() => history.push(BASKET_ROUTE)}>
+                            <HoverButton onClick={() => history.push(BASKET_ROUTE)}>
                                 🛒 Корзина
                             </HoverButton>
+                            <HoverButton onClick={logOut}>Выйти</HoverButton>
                         </Nav>
                     ) : (
                         <Nav>
