@@ -32,9 +32,9 @@ const Profile = observer(() => {
     };
 
     const formatDate = (dateString) => {
-        const options = { 
-            year: 'numeric', 
-            month: 'long', 
+        const options = {
+            year: 'numeric',
+            month: 'long',
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
@@ -58,7 +58,7 @@ const Profile = observer(() => {
                         <Card.Body>
                             <Card.Title>Профиль</Card.Title>
                             <Card.Text>
-                                <strong>Email:</strong> {user.user.email}<br/>
+                                <strong>Email:</strong> {user.user.email}<br />
                                 <strong>Роль:</strong> {user.user.role}
                             </Card.Text>
                         </Card.Body>
