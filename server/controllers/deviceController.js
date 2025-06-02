@@ -10,7 +10,29 @@ class CarController {
 
             // Проверяем обязательные поля
             if (!name || !price || !year || !mileage || !color || !engine || !transmission || !fuel || !carBrandId || !carTypeId) {
-                return next(ApiError.badRequest('Заполните все обязательные поля'))
+                return next(ApiError.badRequest('Пожалуйста, заполните все обязательные поля'))
+            }
+
+            // Проверяем корректность значений
+            if (isNaN(price) || price <= 0) {
+                return next(ApiError.badRequest('Некорректная цена'))
+            }
+            if (isNaN(year) || year < 1900 || year > new Date().getFullYear()) {
+                return next(ApiError.badRequest('Некорректный год выпуска'))
+            }
+            if (isNaN(mileage) || mileage < 0) {
+                return next(ApiError.badRequest('Некорректный пробег'))
+            }
+
+            // Проверяем существование типа и бренда
+            const type = await CarType.findByPk(carTypeId)
+            if (!type) {
+                return next(ApiError.badRequest('Указанный тип автомобиля не найден'))
+            }
+
+            const brand = await CarBrand.findByPk(carBrandId)
+            if (!brand) {
+                return next(ApiError.badRequest('Указанный бренд не найден'))
             }
 
             // Проверяем наличие изображения
@@ -19,57 +41,107 @@ class CarController {
             }
 
             const { img } = req.files
+            // Проверяем тип файла
+            if (!img.mimetype.startsWith('image/')) {
+                return next(ApiError.badRequest('Файл должен быть изображением'))
+            }
+
             let fileName = uuid.v4() + ".jpg"
-            img.mv(path.resolve(__dirname, '..', 'static', fileName))
-            const car = await Car.create({ name, price, year, mileage, color, engine, transmission, fuel, carBrandId, carTypeId, description, img: fileName });
+            await img.mv(path.resolve(__dirname, '..', 'static', fileName))
+
+            const car = await Car.create({
+                name,
+                price,
+                year,
+                mileage,
+                color,
+                engine,
+                transmission,
+                fuel,
+                carBrandId,
+                carTypeId,
+                description,
+                img: fileName
+            });
 
             if (info) {
-                info = JSON.parse(info)
-                info.forEach(i =>
-                    CarFeatures.create({
-                        title: i.title,
-                        value: i.description,
-                        carId: car.id
-                    })
-                )
+                try {
+                    info = JSON.parse(info)
+                    if (Array.isArray(info)) {
+                        await Promise.all(info.map(i =>
+                            CarFeatures.create({
+                                title: i.title,
+                                value: i.description,
+                                carId: car.id
+                            })
+                        ))
+                    }
+                } catch (e) {
+                    console.error('Ошибка при добавлении характеристик:', e)
+                }
+            }
+
+            // Получаем полные данные автомобиля вместе с характеристиками
+            const carWithFeatures = await Car.findOne({
+                where: { id: car.id },
+                include: [{ model: CarFeatures, as: 'features' }]
+            })
+
+            return res.json(carWithFeatures)
+        } catch (e) {
+            next(ApiError.internal('Произошла ошибка при добавлении автомобиля: ' + e.message))
+        }
+    }
+
+    async getAll(req, res, next) {
+        try {
+            let { carBrandId, carTypeId, limit, page } = req.query
+            page = page || 1
+            limit = limit || 9
+            let offset = page * limit - limit
+
+            const whereClause = {}
+            if (carBrandId) whereClause.carBrandId = carBrandId
+            if (carTypeId) whereClause.carTypeId = carTypeId
+
+            const cars = await Car.findAndCountAll({
+                where: whereClause,
+                limit,
+                offset,
+                include: [
+                    { model: CarFeatures, as: 'features' },
+                    { model: CarBrand },
+                    { model: CarType }
+                ],
+                distinct: true
+            })
+
+            return res.json(cars)
+        } catch (e) {
+            next(ApiError.internal('Ошибка при получении списка автомобилей: ' + e.message))
+        }
+    }
+
+    async getOne(req, res, next) {
+        try {
+            const { id } = req.params
+            const car = await Car.findOne({
+                where: { id },
+                include: [
+                    { model: CarFeatures, as: 'features' },
+                    { model: CarBrand },
+                    { model: CarType }
+                ]
+            })
+
+            if (!car) {
+                return next(ApiError.notFound('Автомобиль не найден'))
             }
 
             return res.json(car)
         } catch (e) {
-            next(ApiError.badRequest(e.message))
+            next(ApiError.internal('Ошибка при получении информации об автомобиле: ' + e.message))
         }
-    }
-
-    async getAll(req, res) {
-        let { carBrandId, carTypeId, limit, page } = req.query
-        page = page || 1
-        limit = limit || 9
-        let offset = page * limit - limit
-        let cars;
-        if (!carBrandId && !carTypeId) {
-            cars = await Car.findAndCountAll({ limit, offset })
-        }
-        if (carBrandId && !carTypeId) {
-            cars = await Car.findAndCountAll({ where: { carBrandId }, limit, offset })
-        }
-        if (!carBrandId && carTypeId) {
-            cars = await Car.findAndCountAll({ where: { carTypeId }, limit, offset })
-        }
-        if (carBrandId && carTypeId) {
-            cars = await Car.findAndCountAll({ where: { carTypeId, carBrandId }, limit, offset })
-        }
-        return res.json(cars)
-    }
-
-    async getOne(req, res) {
-        const { id } = req.params
-        const car = await Car.findOne(
-            {
-                where: { id },
-                include: [{ model: DeviceInfo, as: 'info' }]
-            },
-        )
-        return res.json(car)
     }
 }
 

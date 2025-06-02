@@ -1,7 +1,7 @@
 const ApiError = require('../error/ApiError');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const { User, Basket } = require('../models/models')
+const { User, Favorite } = require('../models/models')
 
 const generateJwt = (id, email, role) => {
     return jwt.sign(
@@ -38,46 +38,55 @@ class UserController {
 
             const hashPassword = await bcrypt.hash(password, 5)
             const user = await User.create({ email, role: 'USER', password: hashPassword })
-            await Basket.create({ userId: user.id })
+            
+            // Создаем список избранного для нового пользователя
+            await Favorite.create({ userId: user.id })
 
             const token = generateJwt(user.id, user.email, user.role)
             return res.json({ token })
         } catch (error) {
-            return console.log(error);
-            //next(ApiError.internal('Ошибка при регистрации: ' + error.message))
+            return next(ApiError.internal('Ошибка при регистрации: ' + error.message))
         }
     }
 
     async login(req, res, next) {
-        const { email, password } = req.body
+        try {
+            const { email, password } = req.body
 
-        // Проверка на администратора
-        if (email === 'admin@gmail.com' && password === 'admin') {
-            // Ищем или создаем админа
-            let adminUser = await User.findOne({ where: { email, role: 'ADMIN' } })
-            if (!adminUser) {
-                const hashPassword = await bcrypt.hash(password, 5)
-                adminUser = await User.create({
-                    email,
-                    role: 'ADMIN',
-                    password: hashPassword
-                })
+            // Проверка на администратора
+            if (email === 'admin@gmail.com' && password === 'admin') {
+                // Ищем или создаем админа
+                let adminUser = await User.findOne({ where: { email, role: 'ADMIN' } })
+                if (!adminUser) {
+                    const hashPassword = await bcrypt.hash(password, 5)
+                    adminUser = await User.create({
+                        email,
+                        role: 'ADMIN',
+                        password: hashPassword
+                    })
+                    // Создаем список избранного для админа
+                    await Favorite.create({ userId: adminUser.id })
+                }
+                const token = generateJwt(adminUser.id, adminUser.email, adminUser.role)
+                return res.json({ token })
             }
-            const token = generateJwt(adminUser.id, adminUser.email, adminUser.role)
-            return res.json({ token })
-        }
 
-        // Обычный пользователь
-        const user = await User.findOne({ where: { email } })
-        if (!user) {
-            return next(ApiError.internal('Пользователь не найден'))
+            // Обычный пользователь
+            const user = await User.findOne({ where: { email } })
+            if (!user) {
+                return next(ApiError.badRequest('Пользователь с таким email не найден'))
+            }
+
+            let comparePassword = bcrypt.compareSync(password, user.password)
+            if (!comparePassword) {
+                return next(ApiError.badRequest('Указан неверный пароль'))
+            }
+
+            const token = generateJwt(user.id, user.email, user.role)
+            return res.json({ token })
+        } catch (error) {
+            return next(ApiError.internal('Ошибка при входе: ' + error.message))
         }
-        let comparePassword = bcrypt.compareSync(password, user.password)
-        if (!comparePassword) {
-            return next(ApiError.internal('Указан неверный пароль'))
-        }
-        const token = generateJwt(user.id, user.email, user.role)
-        return res.json({ token })
     }
 
     async check(req, res, next) {
@@ -91,7 +100,7 @@ class UserController {
             const token = generateJwt(user.id, user.email, user.role)
             return res.json({ token })
         } catch (error) {
-            return next(ApiError.internal('Ошибка при проверке авторизации'))
+            return next(ApiError.internal('Ошибка при проверке авторизации: ' + error.message))
         }
     }
 }
