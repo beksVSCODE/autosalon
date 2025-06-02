@@ -25,34 +25,43 @@ const Auth = observer(() => {
 
     const click = async () => {
         try {
+            console.log('Начало процесса авторизации/регистрации')
+            console.log('Email:', email)
             setError('')
             setLoading(true)
 
             if (!email || !password) {
+                console.log('Ошибка: пустые поля')
                 setError('Пожалуйста, заполните все поля')
                 return
             }
 
             if (!validateEmail(email)) {
+                console.log('Ошибка: некорректный email')
                 setError('Пожалуйста, введите корректный email')
                 return
             }
 
             if (!isLogin && password.length < 4) {
+                console.log('Ошибка: короткий пароль')
                 setError('Пароль должен быть не менее 4 символов')
                 return
             }
 
+            console.log('Отправка запроса на', isLogin ? 'вход' : 'регистрацию')
             const data = isLogin
                 ? await login(email, password)
                 : await registration(email, password)
 
+            console.log('Получен ответ от сервера:', data)
             user.setUser(data.user)
             user.setIsAuth(true)
             localStorage.setItem('token', data.token)
+            console.log('Токен сохранен в localStorage')
             history.push(SHOP_ROUTE)
 
         } catch (e) {
+            console.error('Ошибка при авторизации:', e)
             setError(e.message)
         } finally {
             setLoading(false)

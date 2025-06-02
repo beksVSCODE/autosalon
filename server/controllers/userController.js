@@ -4,11 +4,14 @@ const jwt = require('jsonwebtoken')
 const { User, Favorite } = require('../models/models')
 
 const generateJwt = (id, email, role) => {
-    return jwt.sign(
+    console.log('Генерация токена для пользователя:', { id, email, role })
+    const token = jwt.sign(
         { id, email, role },
         process.env.SECRET_KEY,
         { expiresIn: '24h' }
     )
+    console.log('Сгенерированный токен:', token)
+    return token
 }
 
 class UserController {
@@ -38,7 +41,7 @@ class UserController {
 
             const hashPassword = await bcrypt.hash(password, 5)
             const user = await User.create({ email, role: 'USER', password: hashPassword })
-            
+
             // Создаем список избранного для нового пользователя
             await Favorite.create({ userId: user.id })
 

@@ -1,8 +1,19 @@
 import { $authHost, $host } from './index';
 
 export const createBooking = async (bookingData) => {
-    const { data } = await $authHost.post('api/booking', bookingData);
-    return data;
+    try {
+        console.log('Начало процесса бронирования')
+        console.log('Данные бронирования:', bookingData)
+        const token = localStorage.getItem('token')
+        console.log('Токен для бронирования:', token)
+
+        const { data } = await $authHost.post('api/booking', bookingData)
+        console.log('Ответ от сервера:', data)
+        return data
+    } catch (error) {
+        console.error('Ошибка при бронировании:', error.response?.data || error.message)
+        throw error
+    }
 };
 
 export const deleteBooking = async (id) => {

@@ -9,7 +9,12 @@ const $authHost = axios.create({
 })
 
 const authInterceptor = config => {
-    config.headers.authorization = `Bearer ${localStorage.getItem('token')}`
+    const token = localStorage.getItem('token')
+    console.log('Interceptor: Токен из localStorage:', token)
+    if (token) {
+        config.headers.authorization = `Bearer ${token}`
+        console.log('Interceptor: Установлен заголовок authorization:', config.headers.authorization)
+    }
     return config
 }
 

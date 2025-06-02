@@ -4,8 +4,8 @@ const bookingController = require('../controllers/bookingController');
 const authMiddleware = require('../middleware/authMiddleware');
 const checkRole = require('../middleware/checkRoleMiddleware');
 
-// Создать бронирование (доступно всем)
-router.post('/', bookingController.create);
+// Создать бронирование (только для авторизованных пользователей)
+router.post('/', authMiddleware, bookingController.create);
 // Получить все бронирования (только для админа)
 router.get('/', checkRole('ADMIN'), bookingController.getAll);
 // Удалить бронирование (только для админа)
