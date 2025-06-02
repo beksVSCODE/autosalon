@@ -15,11 +15,13 @@ const App = observer(() => {
         const checkAuth = async () => {
             try {
                 const data = await check()
-                user.setUser(data)
+                user.setUser(data.user)
                 user.setIsAuth(true)
+                localStorage.setItem('token', data.token)
             } catch (error) {
                 user.setUser({})
                 user.setIsAuth(false)
+                localStorage.removeItem('token')
                 console.log('Ошибка авторизации:', error.message)
             } finally {
                 setLoading(false)

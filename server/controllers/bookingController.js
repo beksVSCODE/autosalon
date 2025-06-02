@@ -6,7 +6,11 @@ class BookingController {
     async create(req, res, next) {
         try {
             const { carId, full_name, phone, email, type, date, comment } = req.body;
-            const userId = req.user.id; // из authMiddleware
+            // userId обязателен, только для авторизованных
+            if (!req.user || !req.user.id) {
+                return next(ApiError.unauthorized('Требуется авторизация для бронирования'));
+            }
+            const userId = req.user.id;
 
             // Валидация
             if (!carId || !full_name || !phone || !email || !type || !date) {

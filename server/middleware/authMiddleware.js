@@ -8,6 +8,7 @@ module.exports = function (req, res, next) {
 
     try {
         const authHeader = req.headers.authorization
+        console.log('AUTH HEADER:', authHeader)
         if (!authHeader) {
             return next(ApiError.unauthorized('Отсутствует токен авторизации'))
         }

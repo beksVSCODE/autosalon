@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Container, Image, Row } from "react-bootstrap";
+import { Button, Col, Container, Image, Row } from "react-bootstrap";
 import { useParams } from 'react-router-dom'
 import { fetchOneCar } from "../http/deviceAPI";
 import CreateBooking from '../components/modals/CreateBooking';

@@ -1,7 +1,7 @@
-import { $host } from './index';
+import { $authHost, $host } from './index';
 
 export const createBooking = async (bookingData) => {
-    const { data } = await $host.post('api/booking', bookingData);
+    const { data } = await $authHost.post('api/booking', bookingData);
     return data;
 };
 

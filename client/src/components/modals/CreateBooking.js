@@ -96,13 +96,14 @@ const CreateBooking = ({ show, onHide, carId, carName }) => {
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Тип заявки</Form.Label>
-                        <Form.Select
+                        <Form.Control
+                            as="select"
                             value={type}
                             onChange={e => setType(e.target.value)}
                         >
                             <option value="test_drive">Тест-драйв</option>
                             <option value="purchase">Покупка</option>
-                        </Form.Select>
+                        </Form.Control>
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Дата и время</Form.Label>

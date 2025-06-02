@@ -10,7 +10,7 @@ export const registration = async (email, password) => {
         })
         if (data.token) {
             localStorage.setItem('token', data.token)
-            return jwt_decode(data.token)
+            return { user: jwt_decode(data.token), token: data.token }
         }
         throw new Error('Токен не получен от сервера')
     } catch (error) {
@@ -29,7 +29,7 @@ export const login = async (email, password) => {
         })
         if (data.token) {
             localStorage.setItem('token', data.token)
-            return jwt_decode(data.token)
+            return { user: jwt_decode(data.token), token: data.token }
         }
         throw new Error('Токен не получен от сервера')
     } catch (error) {
@@ -47,21 +47,20 @@ export const check = async () => {
         if (!savedToken) {
             throw new Error('Не авторизован')
         }
-
+        // Явно устанавливаем токен в заголовок
+        $authHost.defaults.headers.authorization = `Bearer ${savedToken}`;
         const { data } = await $authHost.get('api/user/auth')
         if (!data.token) {
             localStorage.removeItem('token')
             throw new Error('Токен не получен от сервера')
         }
-
         localStorage.setItem('token', data.token)
-        return jwt_decode(data.token)
+        return { user: jwt_decode(data.token), token: data.token }
     } catch (error) {
         localStorage.removeItem('token')
         if (error.response?.data?.message) {
             throw new Error(error.response.data.message)
         }
-        // Если ошибка уже создана нами выше, используем её
         if (error.message) {
             throw error
         }

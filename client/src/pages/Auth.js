@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react';
 import { Container, Form } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
 import { NavLink, useLocation, useHistory } from "react-router-dom";
 import { LOGIN_ROUTE, REGISTRATION_ROUTE, SHOP_ROUTE } from "../utils/consts";
 import { login, registration } from "../http/userAPI";
@@ -48,8 +47,9 @@ const Auth = observer(() => {
                 ? await login(email, password)
                 : await registration(email, password)
 
-            user.setUser(data)
+            user.setUser(data.user)
             user.setIsAuth(true)
+            localStorage.setItem('token', data.token)
             history.push(SHOP_ROUTE)
 
         } catch (e) {
