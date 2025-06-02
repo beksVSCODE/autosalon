@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import CarTypeBar from "../components/TypeBar";
 import CarBrandBar from "../components/BrandBar";
@@ -10,6 +10,7 @@ import Pages from "../components/Pages";
 
 const CarShop = observer(() => {
     const { device } = useContext(Context);
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         fetchCarTypes().then(data => device.setTypes(data));
@@ -28,6 +29,11 @@ const CarShop = observer(() => {
             device.setTotalCount(data.count);
         });
     }, [device.page, device.selectedType, device.selectedBrand, device]);
+
+    // Фильтрация по поиску
+    const filteredCars = device.cars.filter(car =>
+        car.name.toLowerCase().includes(search.toLowerCase())
+    );
 
     return (
         <div style={{ backgroundColor: '#f4f4f4' }}>
@@ -71,10 +77,18 @@ const CarShop = observer(() => {
             <Container className="py-5">
                 <div className="text-center mb-5">
                     <h2 className="fw-bold text-dark">Каталог автомобилей</h2>
+                    {/* Поисковик */}
+                    <input
+                        type="text"
+                        className="form-control w-50 mx-auto my-3"
+                        placeholder="Поиск по названию..."
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        style={{ maxWidth: 400 }}
+                    />
                     <p className="text-secondary fs-5">Элегантность. Мощность. Комфорт.</p>
                     <hr className="mx-auto" style={{ width: '100px', borderTop: '2px solid #000' }} />
                 </div>
-
                 <Row>
                     <Col md={3}>
                         <Card className="p-3 mb-4 shadow-sm border-0 bg-white rounded-4">
@@ -87,11 +101,10 @@ const CarShop = observer(() => {
                             <h5 className="mb-3 fw-semibold text-uppercase text-dark">Марка автомобиля</h5>
                             <CarBrandBar />
                         </Card>
-
                         <section className="mb-4">
-                            <CarList />
+                            {/* Передаём отфильтрованные авто */}
+                            <CarList cars={filteredCars} />
                         </section>
-
                         <div className="d-flex justify-content-center mt-4">
                             <Pages />
                         </div>
