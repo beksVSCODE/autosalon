@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import UserStore from "./store/UserStore";
 import DeviceStore from "./store/DeviceStore";
+import './styles/modern.css';
 
 export const Context = createContext(null);
 

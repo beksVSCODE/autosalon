@@ -7,6 +7,8 @@ import { observer } from "mobx-react-lite";
 import { Context } from "../index";
 import { fetchCarBrands, fetchCars, fetchCarTypes } from "../http/deviceAPI";
 import Pages from "../components/Pages";
+import { FiCheck, FiTrendingUp, FiShield } from 'react-icons/fi';
+import { MdDirectionsCar } from 'react-icons/md';
 
 const CarShop = observer(() => {
     const { device } = useContext(Context);
@@ -19,7 +21,8 @@ const CarShop = observer(() => {
             device.setCars(data.rows);
             device.setTotalCount(data.count);
         });
-    }, [device]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         const typeId = device.selectedType?.id || null;
@@ -28,7 +31,8 @@ const CarShop = observer(() => {
             device.setCars(data.rows);
             device.setTotalCount(data.count);
         });
-    }, [device.page, device.selectedType, device.selectedBrand, device]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [device.page, device.selectedType, device.selectedBrand]);
 
     // Фильтрация по поиску
     const filteredCars = device.cars.filter(car =>
@@ -36,73 +40,168 @@ const CarShop = observer(() => {
     );
 
     return (
-        <div style={{ backgroundColor: '#f4f4f4' }}>
-            {/* Hero секция */}
+        <div style={{ backgroundColor: '#0f172a', minHeight: '100vh' }}>
+            {/* Hero секция с современным дизайном */}
             <section style={{
-                backgroundImage: 'url(https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1500&q=80)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                color: 'white',
-                padding: '120px 20px',
+                background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+                position: 'relative',
+                overflow: 'hidden',
+                padding: '140px 20px',
                 textAlign: 'center'
             }}>
-                <h1 className="display-3 fw-bold">Найдите автомобиль своей мечты</h1>
-                <p className="fs-4 mt-3">Премиум-качество. Доверие. Стиль.</p>
-                <Button variant="light" size="lg" className="mt-4 px-4 py-2 rounded-pill fw-semibold">
-                    Перейти к выбору
-                </Button>
+                {/* Декоративные элементы */}
+                <div style={{
+                    position: 'absolute',
+                    top: '-50%',
+                    right: '-10%',
+                    width: '600px',
+                    height: '600px',
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    borderRadius: '50%',
+                    filter: 'blur(80px)'
+                }}></div>
+                <div style={{
+                    position: 'absolute',
+                    bottom: '-30%',
+                    left: '-5%',
+                    width: '400px',
+                    height: '400px',
+                    background: 'rgba(59, 130, 246, 0.05)',
+                    borderRadius: '50%',
+                    filter: 'blur(60px)'
+                }}></div>
+
+                <div style={{ position: 'relative', zIndex: 1 }} className="animate-fade-in-up">
+                    <h1 className="heading-xl text-white mb-4">
+                        Найдите автомобиль<br />
+                        <span style={{ color: '#f59e0b' }}>своей мечты</span>
+                    </h1>
+                    <p className="fs-4 text-white mb-5" style={{ opacity: 0.9 }}>
+                        Премиум-качество • Доверие • Стиль
+                    </p>
+                    <Button
+                        className="btn-gradient-accent px-5 py-3"
+                        onClick={() => document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' })}
+                    >
+                        <MdDirectionsCar size={20} style={{ marginRight: '8px' }} />
+                        Перейти к выбору
+                    </Button>
+                </div>
             </section>
 
             {/* О нас */}
-            <section className="py-5 bg-white">
+            <section className="py-5" style={{ background: 'var(--bg-secondary)' }}>
                 <Container>
                     <Row className="align-items-center">
-                        <Col md={6} className="mb-4 mb-md-0">
-                            <img src="../assets/about.png" alt="О нас" className="img-fluid rounded-4 shadow" />
+                        <Col md={6} className="mb-4 mb-md-0 animate-slide-in-left">
+                            <div style={{
+                                background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
+                                padding: '40px',
+                                borderRadius: '16px',
+                                boxShadow: '0 20px 60px rgba(59, 130, 246, 0.25)'
+                            }}>
+                                <h1 className="display-1 text-white fw-bold mb-0">1000+</h1>
+                                <p className="text-white fs-5 mb-0">Автомобилей в каталоге</p>
+                            </div>
                         </Col>
-                        <Col md={6}>
-                            <h2 className="fw-bold mb-3">Почему выбирают нас?</h2>
-                            <p className="text-muted">Мы стремимся предоставить только лучший опыт покупки автомобиля. Наши специалисты отбирают только проверенные авто, предлагая честные цены и качественный сервис.</p>
-                            <ul className="text-muted list-unstyled mt-4">
-                                <li>✓ Индивидуальный подход к каждому клиенту</li>
-                                <li>✓ Прозрачная история автомобилей</li>
-                                <li>✓ Удобные способы оплаты и кредитования</li>
-                            </ul>
+                        <Col md={6} className="animate-slide-in-right">
+                            <h2 className="heading-lg mb-4">
+                                Почему <span className="text-gradient-primary">выбирают нас?</span>
+                            </h2>
+                            <p className="text-secondary fs-5 mb-4">
+                                Мы стремимся предоставить только лучший опыт покупки автомобиля.
+                                Наши специалисты отбирают только проверенные авто.
+                            </p>
+                            <div className="d-flex flex-column gap-3">
+                                <div className="d-flex align-items-center gap-3">
+                                    <div style={{
+                                        width: '48px',
+                                        height: '48px',
+                                        background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
+                                        borderRadius: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: 'white'
+                                    }}><FiCheck size={24} /></div>
+                                    <div>
+                                        <h6 className="mb-0 fw-bold text-white">Индивидуальный подход</h6>
+                                        <p className="mb-0 text-secondary small">к каждому клиенту</p>
+                                    </div>
+                                </div>
+                                <div className="d-flex align-items-center gap-3">
+                                    <div style={{
+                                        width: '48px',
+                                        height: '48px',
+                                        background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                                        borderRadius: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: 'white'
+                                    }}><FiTrendingUp size={24} /></div>
+                                    <div>
+                                        <h6 className="mb-0 fw-bold text-white">Прозрачная история</h6>
+                                        <p className="mb-0 text-secondary small">всех автомобилей</p>
+                                    </div>
+                                </div>
+                                <div className="d-flex align-items-center gap-3">
+                                    <div style={{
+                                        width: '48px',
+                                        height: '48px',
+                                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                        borderRadius: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: 'white'
+                                    }}><FiShield size={24} /></div>
+                                    <div>
+                                        <h6 className="mb-0 fw-bold text-white">Удобные способы оплаты</h6>
+                                        <p className="mb-0 text-secondary small">и кредитования</p>
+                                    </div>
+                                </div>
+                            </div>
                         </Col>
                     </Row>
                 </Container>
             </section>
 
             {/* Каталог */}
-            <Container className="py-5">
-                <div className="text-center mb-5">
-                    <h2 className="fw-bold text-dark">Каталог автомобилей</h2>
+            <Container className="py-5" id="catalog">
+                <div className="text-center mb-5 animate-fade-in-up">
+                    <h2 className="heading-lg mb-3">
+                        Каталог <span className="text-gradient-primary">автомобилей</span>
+                    </h2>
+                    <p className="text-secondary fs-5 mb-4">Элегантность • Мощность • Комфорт</p>
                     {/* Поисковик */}
-                    <input
-                        type="text"
-                        className="form-control w-50 mx-auto my-3"
-                        placeholder="Поиск по названию..."
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                        style={{ maxWidth: 400 }}
-                    />
-                    <p className="text-secondary fs-5">Элегантность. Мощность. Комфорт.</p>
-                    <hr className="mx-auto" style={{ width: '100px', borderTop: '2px solid #000' }} />
+                    <div className="form-modern" style={{ maxWidth: '500px', margin: '0 auto' }}>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="🔍 Поиск по названию..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                        />
+                    </div>
                 </div>
                 <Row>
                     <Col md={3}>
-                        <Card className="p-3 mb-4 shadow-sm border-0 bg-white rounded-4">
-                            <h5 className="mb-3 fw-semibold text-uppercase text-dark">Тип кузова</h5>
+                        <div className="card-modern p-4 mb-4">
+                            <h5 className="mb-3 fw-bold text-uppercase" style={{ fontSize: '14px', letterSpacing: '1px', color: '#64748b' }}>
+                                🚧 Тип кузова
+                            </h5>
                             <CarTypeBar />
-                        </Card>
+                        </div>
                     </Col>
                     <Col md={9}>
-                        <Card className="p-3 mb-4 shadow-sm border-0 bg-white rounded-4">
-                            <h5 className="mb-3 fw-semibold text-uppercase text-dark">Марка автомобиля</h5>
+                        <div className="card-modern p-4 mb-4">
+                            <h5 className="mb-3 fw-bold text-uppercase" style={{ fontSize: '14px', letterSpacing: '1px', color: '#64748b' }}>
+                                🏭 Марка автомобиля
+                            </h5>
                             <CarBrandBar />
-                        </Card>
+                        </div>
                         <section className="mb-4">
-                            {/* Передаём отфильтрованные авто */}
                             <CarList cars={filteredCars} />
                         </section>
                         <div className="d-flex justify-content-center mt-4">
@@ -113,20 +212,62 @@ const CarShop = observer(() => {
             </Container>
 
             {/* Преимущества */}
-            <section className="py-5" style={{ backgroundColor: '#fff' }}>
+            <section className="py-5" style={{ background: 'white' }}>
                 <Container>
-                    <Row className="text-center">
-                        <Col md={4} className="mb-4">
-                            <h5 className="fw-bold mb-2">Более 1000 авто</h5>
-                            <p className="text-muted">Большой выбор от проверенных поставщиков</p>
+                    <Row className="text-center g-4">
+                        <Col md={4}>
+                            <div className="p-4 hover-lift">
+                                <div style={{
+                                    width: '80px',
+                                    height: '80px',
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    borderRadius: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    margin: '0 auto 20px',
+                                    fontSize: '40px',
+                                    boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)'
+                                }}>🚗</div>
+                                <h5 className="fw-bold mb-3">Более 1000 авто</h5>
+                                <p className="text-secondary">Большой выбор от проверенных поставщиков</p>
+                            </div>
                         </Col>
-                        <Col md={4} className="mb-4">
-                            <h5 className="fw-bold mb-2">Гарантия качества</h5>
-                            <p className="text-muted">Только проверенные авто с историей</p>
+                        <Col md={4}>
+                            <div className="p-4 hover-lift">
+                                <div style={{
+                                    width: '80px',
+                                    height: '80px',
+                                    background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                                    borderRadius: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    margin: '0 auto 20px',
+                                    fontSize: '40px',
+                                    boxShadow: '0 10px 30px rgba(245, 87, 108, 0.3)'
+                                }}>✅</div>
+                                <h5 className="fw-bold mb-3">Гарантия качества</h5>
+                                <p className="text-secondary">Только проверенные авто с историей</p>
+                            </div>
                         </Col>
-                        <Col md={4} className="mb-4">
-                            <h5 className="fw-bold mb-2">Поддержка 24/7</h5>
-                            <p className="text-muted">Консультации и помощь в любое время</p>
+                        <Col md={4}>
+                            <div className="p-4 hover-lift">
+                                <div style={{
+                                    width: '80px',
+                                    height: '80px',
+                                    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                                    borderRadius: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    margin: '0 auto 20px',
+                                    fontSize: '40px',
+                                    boxShadow: '0 10px 30px rgba(79, 172, 254, 0.3)'
+                                }}>📞</div>
+                                <h5 className="fw-bold mb-3">Поддержка 24/7</h5>
+                                <p className="text-secondary">Консультации и помощь в любое время</p>
+                            </div>
                         </Col>
                     </Row>
                 </Container>

@@ -9,8 +9,13 @@ const CarTypeBar = observer(() => {
         <ListGroup>
             {device.types.map(carType =>
                 <ListGroup.Item
-                    style={{ cursor: 'pointer' }}
-                    active={carType.id === device.selectedType.id}
+                    style={{
+                        cursor: 'pointer',
+                        background: carType.id === device.selectedType?.id ? '#3b82f6' : 'var(--bg-secondary)',
+                        border: '1px solid rgba(59, 130, 246, 0.2)',
+                        color: carType.id === device.selectedType?.id ? 'white' : 'var(--text-primary)'
+                    }}
+                    active={carType.id === device.selectedType?.id}
                     onClick={() => device.setSelectedType(carType)}
                     key={carType.id}
                 >

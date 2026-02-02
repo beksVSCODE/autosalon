@@ -22,7 +22,6 @@ const App = observer(() => {
                 user.setUser({})
                 user.setIsAuth(false)
                 localStorage.removeItem('token')
-                console.log('Ошибка авторизации:', error.message)
             } finally {
                 setLoading(false)
             }
